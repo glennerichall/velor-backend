@@ -1,0 +1,23 @@
+{
+  "name": "velor-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.48.1",
+    "chai": "^5.1.2",
+    "chai-as-promised": "^8.0.0",
+    "chai-exclude": "^3.0.0",
+    "playwright": "^1.48.1",
+    "sinon": "^19.0.2"
+  },
+  "dependencies": {
+    "express": "^4.21.1",
+    "velor": "github:glennerichall/velor-utils"
+  }
+}
