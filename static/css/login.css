@@ -1,0 +1,89 @@
+#content,
+body,
+html {
+    height: 100%;
+}
+
+#timeout {
+    font-size: 0.8em;
+    margin-top: 1em;
+}
+
+#content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#container {
+    position: relative;
+    width: 270px;
+    height: 330px;
+
+    border-radius: 10px;
+    border: 1px solid #c5c5c5;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#container .body {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 30px;
+
+    flex-grow: 1;
+}
+
+.logo-parent {
+    position: relative!important;
+    margin-left: -1px;
+}
+
+body {
+    font-size: 1.5em;
+    text-align: center;
+    background: #d9d9d9;
+}
+
+
+#logo {
+    width: 32px;
+    height: 32px;
+}
+
+.logo-parent {
+    width: calc(100% + 2px);
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    box-sizing: border-box;
+    border: 1px solid #23272b;
+}
+
+#check {
+    width: 92px;
+    height: 92px;
+}
+
+#check.success {
+    fill: green;
+}
+
+#check.failure {
+    fill: darkred;
+}
+
+
+.message {
+    text-align: center;
+    margin-left: 4px;
+    margin-right: 4px;
+}

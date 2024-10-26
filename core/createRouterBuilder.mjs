@@ -1,30 +1,5 @@
 import express from "express";
-
-export function tryCatch(handler, name) {
-
-    if (Array.isArray(handler)) {
-        return handler.map(x => tryCatch(x, name));
-    } else if (isRouter(handler)) {
-        handler.publicName = name;
-        return handler;
-    }
-
-    const fun = async (...args) => {
-        try {
-            await handler(...args);
-        } catch (e) {
-            if (args.length >= 3) {
-                let next = args[args.length - 1];
-                next(e);
-            }
-        }
-    }
-    if (name) {
-        fun.publicName = name;
-    }
-    fun.wrappedHandler = handler;
-    return fun;
-}
+import {tryCatchAsyncHandler} from "./tryCatchAsyncHandler.mjs";
 
 const names = [];
 
@@ -37,46 +12,46 @@ class RouterBuilder {
 
     use(path, ...handlers) {
         if (typeof path === 'function') {
-            this._router.use(tryCatch(path), ...tryCatch(handlers, this._name));
+            this._router.use(tryCatchAsyncHandler(path), ...tryCatchAsyncHandler(handlers, this._name));
         } else {
-            this._router.use(path, ...tryCatch(handlers, this._name));
+            this._router.use(path, ...tryCatchAsyncHandler(handlers, this._name));
         }
         this._name = null;
         return this;
     }
 
     all(path, ...handlers) {
-        this._router.all(path, ...tryCatch(handlers, this._name));
+        this._router.all(path, ...tryCatchAsyncHandler(handlers, this._name));
         this._name = null;
         return this;
     }
 
     get(path, ...handlers) {
-        this._router.get(path, ...tryCatch(handlers, this._name));
+        this._router.get(path, ...tryCatchAsyncHandler(handlers, this._name));
         this._name = null;
         return this;
     }
 
     post(path, ...handlers) {
-        this._router.post(path, ...tryCatch(handlers, this._name));
+        this._router.post(path, ...tryCatchAsyncHandler(handlers, this._name));
         this._name = null;
         return this;
     }
 
     put(path, ...handlers) {
-        this._router.put(path, ...tryCatch(handlers, this._name));
+        this._router.put(path, ...tryCatchAsyncHandler(handlers, this._name));
         this._name = null;
         return this;
     }
 
     delete(path, ...handlers) {
-        this._router.delete(path, ...tryCatch(handlers, this._name));
+        this._router.delete(path, ...tryCatchAsyncHandler(handlers, this._name));
         this._name = null;
         return this;
     }
 
     options(path, ...handlers) {
-        this._router.options(path, ...tryCatch(handlers));
+        this._router.options(path, ...tryCatchAsyncHandler(handlers));
         this._name = null;
         return this;
     }
@@ -123,7 +98,7 @@ class RouterBuilder {
                     newRouter = express.Router,
                 } = this._options;
 
-                const subRouter = createRouter({
+                const subRouter = createRouterBuilder({
                     configuration: route.router,
                     newRouter
                 }).done();
@@ -143,14 +118,7 @@ class RouterBuilder {
     }
 }
 
-export function isRouter(router) {
-    return typeof router === 'function' &&
-        Array.isArray(router.stack) &&
-        typeof router.params === 'object' &&
-        router.length === 3;
-}
-
-export function createRouter(args = {}) {
+export function createRouterBuilder(args = {}) {
 
     const {
         newRouter = express.Router,

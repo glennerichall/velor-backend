@@ -1,0 +1,9 @@
+<html>
+<head></head>
+<body>
+<script>
+    window.opener?.postMessage('download-status', <%= status %>);
+    window.close();
+</script>
+</body>
+</html>
