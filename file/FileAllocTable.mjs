@@ -1,9 +1,11 @@
 export class FileAllocTable {
+    #database;
+
     constructor(database) {
-        this._db = database;
+        this.#database = database;
     }
 
-    _getOperations(database) {
+    #getOperations(database) {
         const createEntry = async (bucket, bucketname) => database.files.createFile(bucket, bucketname);
         const setAvailable = bucketname => database.files.updateSetUploaded(bucketname);
         const deleteEntry = bucketname => database.files.deleteByBucketname(bucketname);
@@ -34,13 +36,13 @@ export class FileAllocTable {
     }
 
     transact(callback) {
-        return this._db.transact(db => {
-            return callback(this._getOperations(db));
+        return this.#database.transact(db => {
+            return callback(this.#getOperations(db));
         })
     }
 
     open() {
-        return this._getOperations(this._db);
+        return this.#getOperations(this.#database);
     }
 
 }

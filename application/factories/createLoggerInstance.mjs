@@ -1,25 +1,20 @@
 import winston from "winston";
 
-import {getEnv} from "velor/utils/injection/baseServices.mjs";
-import {
-    ENV_PRODUCTION
-} from "velor/env.mjs";
+import {getEnvValue} from "velor/utils/injection/baseServices.mjs";
+
+import {LOG_LEVEL} from "../services/backendEnvKeys.mjs";
+import {isProduction} from "../services/backendServices.mjs";
 
 export function createLoggerInstance(services) {
-    const env = getEnv(services);
-
-    // if(env.NODE_ENV === ENV_DEVELOPMENT) {
-    //     return console;
-    // }
+    const level = getEnvValue(services, LOG_LEVEL) ?? isProduction(services) ? 'info' : 'debug';
 
     return winston.createLogger({
-        level: env.ZUPFE_LOG_LEVEL ?? (env.NODE_ENV === ENV_PRODUCTION ? 'info' : 'debug'),
+        level,
         transports: [
             new winston.transports.Console(),
         ],
         format: winston.format.printf((info) => {
             return info.message;
-        }),
-        silent: env.SILENT
+        })
     });
 }

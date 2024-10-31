@@ -1,4 +1,7 @@
-import {getProvider} from "velor/utils/injection/baseServices.mjs";
+import {
+    getEnv,
+    getProvider
+} from "velor/utils/injection/baseServices.mjs";
 
 import {
     s_clientProvider,
@@ -14,8 +17,8 @@ import {
     s_snapshotManager
 } from "./backendServiceKeys.mjs";
 
-export function getDatabase(req) {
-    return getProvider(req)[s_database]();
+export function getDatabase(services) {
+    return getProvider(services)[s_database]();
 }
 
 export function getMessageQueue(services) {

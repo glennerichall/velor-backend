@@ -6,7 +6,8 @@ import {
     ERROR_FILE_UPLOAD_FAILED,
     SUCCESS_FILE_PROCESSED,
     SUCCESS_FILE_VALIDATED
-} from "../../shared/constants/errors.mjs";
+} from "./errors.mjs";
+
 import {getLogger} from "velor/utils/injection/services.mjs";
 
 export class FileManager {
