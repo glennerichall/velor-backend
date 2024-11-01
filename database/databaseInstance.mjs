@@ -1,5 +1,3 @@
-import * as acl from "../persistence/acl.mjs";
-import * as apiKeys from "../persistence/apiKeys.mjs";
 import * as files from "../persistence/files.mjs";
 import * as tokens from "../persistence/tokens.mjs";
 import * as system from "../persistence/system.mjs";
@@ -14,8 +12,6 @@ import {
 
 export function getRawStatements() {
     return {
-        acl,
-        apiKeys,
         files,
         tokens,
         system

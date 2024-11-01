@@ -1,7 +1,8 @@
 import {
     URL_SYSTEM_PUBLISH_PUBSUB,
 } from "../../../shared/constants/urls.mjs";
-import {ApiRequestBase} from "../../../api/api/ApiRequestBase.mjs";
+
+import {ApiRequestBase} from "velor-api/api/api/ApiRequestBase.mjs";
 import {btoa} from "velor/utils/string.mjs";
 
 export class PubSubApi extends ApiRequestBase {

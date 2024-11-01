@@ -1,4 +1,4 @@
-import {getChannelForSubscriptions,} from "../channels/channels.mjs";
+import {getChannelForSubscriptions,} from "../channels.mjs";
 import {EmitterMixin} from "velor/utils/Emitter.mjs";
 
 

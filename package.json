@@ -15,6 +15,8 @@
     "bull": "^4.16.3",
     "ioredis": "^5.4.1",
     "velor": "github:glennerichall/velor-utils",
+    "velor-api": "github:glennerichall/velor-api",
+    "velor-messaging": "github:glennerichall/velor-messaging",
     "winston": "^3.15.0"
   }
 }

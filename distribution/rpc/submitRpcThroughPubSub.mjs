@@ -1,17 +1,13 @@
 import {publishPubSubMessage} from "../actions/publishPubSubMessage.mjs";
 import {
     validateMessage
-} from "../../messaging/message/isMessage.mjs";
-import {MESSAGE_TYPE_RPC_CALL} from "../../messaging/constants.mjs";
+} from "velor-messaging/messaging/message/isMessage.mjs";
+import {MESSAGE_TYPE_RPC_CALL} from "velor-messaging/messaging/constants.mjs";
 
-import {
-    getRpcSignaling
-} from "../../../server/application/services/serverServices.mjs";
-
-import {getChannelForRpc} from "../channels/channels.mjs";
+import {getChannelForRpc} from "../channels.mjs";
 import {
     getMessageBuilder,
-    getPubSub
+    getPubSub, getRpcSignaling
 } from "../../application/services/backendServices.mjs";
 
 export async function submitRpcThroughPubSub(services, message, ...channels) {

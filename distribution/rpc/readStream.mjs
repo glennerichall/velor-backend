@@ -2,12 +2,13 @@ import {submitRpcThroughPubSub} from "./submitRpcThroughPubSub.mjs";
 
 import {RPC_REQUEST_STREAM} from "../../../shared/constants/commands.mjs";
 
-import {MessageWrapper} from "../../messaging/message/MessageWrapper.mjs";
+import {MessageWrapper} from "velor-messaging/messaging/message/MessageWrapper.mjs";
+
 import {
     getStreamHandler
 } from "../../../server/application/services/serverServices.mjs";
 
-import {getChannelForStream} from "../channels/channels.mjs";
+import {getChannelForStream} from "../channels.mjs";
 
 import {
     getMessageBuilder,
@@ -30,7 +31,9 @@ export async function readStream(services, type, data, ...channels) {
         });
 
         reader.on('end', () => pubSub.unsubscribe(subscription));
+
         let message = messageBuilder.newCommand(RPC_REQUEST_STREAM, {type, streamId: id, data});
+
         await submitRpcThroughPubSub(services, message, ...channels);
     } catch (e) {
         let error;

@@ -7,9 +7,8 @@ import {
     s_database,
     s_keyStore,
     s_messageBuilder,
-    s_messageFactory,
     s_messageQueue,
-    s_pubSub,
+    s_pubSub, s_rpcSignaling,
 } from "./backendServiceKeys.mjs";
 
 export function getDatabase(services) {
@@ -28,14 +27,14 @@ export function getMessageBuilder(services) {
     return getProvider(services)[s_messageBuilder]();
 }
 
-export function getMessageFactory(services) {
-    return getProvider(services)[s_messageFactory]();
-}
-
 export function getClientProvider(services) {
     return getProvider(services)[s_clientProvider]();
 }
 
 export function getPubSub(services) {
     return getProvider(services)[s_pubSub]();
+}
+
+export function getRpcSignaling(services) {
+    return getProvider(services)[s_rpcSignaling]();
 }

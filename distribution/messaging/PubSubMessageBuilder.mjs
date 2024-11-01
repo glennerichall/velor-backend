@@ -4,9 +4,9 @@ import {
 } from "../rpc/control.mjs";
 
 import {PubSubMessageWrapper} from "./PubSubMessageWrapper.mjs";
-import {MessageWrapperBase} from "../../messaging/message/MessageWrapperBase.mjs";
+import {MessageWrapperBase} from "velor-messaging/messaging/message/MessageWrapperBase.mjs";
 import {signData} from "velor/utils/signature.mjs";
-import {signMessage} from "../../messaging/message/signMessage.mjs";
+import {signMessage} from "velor-messaging/messaging/message/signMessage.mjs";
 
 import * as controls from "../rpc/control.mjs";
 

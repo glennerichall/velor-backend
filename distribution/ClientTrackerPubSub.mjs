@@ -1,5 +1,5 @@
 import {getSubscriptionCount} from "./actions/getSubscriptionCount.mjs";
-import {getChannelForWsId} from "./channels/channels.mjs";
+import {getChannelForWsId} from "./channels.mjs";
 import {requestSubscription} from "./rpc/requestSubscription.mjs";
 import {requestUnsubscription} from "./rpc/requestUnsubscription.mjs";
 import {unsubscribe} from "./actions/unsubscribe.mjs";

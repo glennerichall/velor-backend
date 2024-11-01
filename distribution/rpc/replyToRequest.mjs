@@ -1,6 +1,6 @@
 import {
     getChannelForRpc
-} from "../channels/channels.mjs";
+} from "../channels.mjs";
 
 import {
     getMessageBuilder,

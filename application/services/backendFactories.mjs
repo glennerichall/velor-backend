@@ -6,7 +6,7 @@ import {
 } from "../../distribution/impl/LocalKeyStore.mjs";
 import {createLoggerInstance} from "../factories/createLoggerInstance.mjs";
 import {createMessageQueueInstance} from "../factories/createMessageQueueInstance.mjs";
-import {createMessageCoderInstance} from "../../../api/factories/createMessageCoderInstance.mjs";
+import {createMessageCoderInstance} from "velor-api/api/factories/createMessageCoderInstance.mjs";
 import {
     s_database,
     s_databaseManager,
@@ -14,10 +14,12 @@ import {
     s_logger,
     s_messageBuilder,
     s_messageQueue,
-    s_pubSub,
+    s_pubSub, s_rpcSignaling, s_sync,
 } from "./backendServiceKeys.mjs";
-import {s_messageCoder} from "../../../api/services/apiServiceKeys.mjs";
-import {createMessageBuilderInstance} from "../../../api/factories/createMessageBuilderInstance.mjs";
+import {s_messageCoder} from "velor-api/api/services/apiServiceKeys.mjs";
+import {createMessageBuilderInstance} from "velor-api/api/factories/createMessageBuilderInstance.mjs";
+import {Synchronizer} from "velor/utils/sync.mjs";
+import {createRpcSignalingManager} from "../factories/createRpcSignalingManager.mjs";
 
 export const backendFactories = {
     [s_pubSub]: createLocalPubSubInstance,
@@ -28,4 +30,6 @@ export const backendFactories = {
     [s_messageQueue]: createMessageQueueInstance,
     [s_messageBuilder]: createMessageBuilderInstance,
     [s_messageCoder]: createMessageCoderInstance,
+    [s_sync]: Synchronizer,
+    [s_rpcSignaling]: createRpcSignalingManager,
 };

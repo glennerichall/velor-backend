@@ -1,5 +1,9 @@
-import {MESSAGE_TYPE_RPC_REJECT, MESSAGE_TYPE_RPC_REPLY, MESSAGE_TYPE_STREAM} from "/../messaging/constants.mjs";
-import {getChannelForRpc, getChannelForStream} from "./channels/channels.mjs";
+import {
+    MESSAGE_TYPE_RPC_REJECT,
+    MESSAGE_TYPE_RPC_REPLY,
+    MESSAGE_TYPE_STREAM
+} from "velor-messaging/messaging/constants.mjs";
+import {getChannelForRpc, getChannelForStream} from "./channels.mjs";
 
 export class MessageReceiver {
     #pubSub;
