@@ -1,5 +1,4 @@
-import {PROCESS_FILE} from "../../shared/constants/queues.mjs";
-
+export const QUEUE_JOB_NAME = "PROCESS_FILE";
 
 export class FileReceiver {
     constructor(fileManagers, queue) {
@@ -14,7 +13,7 @@ export class FileReceiver {
             .setFileAvailable(bucketname);
 
         if (file) {
-            await this._queue.submit(PROCESS_FILE,
+            await this._queue.submit(QUEUE_JOB_NAME,
                 {bucketname, bucket}, {jobId: bucketname});
             return true;
         }

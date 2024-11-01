@@ -1,4 +1,4 @@
-import {MessageWrapperBase} from "../../../messaging/message/MessageWrapperBase.mjs";
+import {MessageWrapperBase} from "../../messaging/message/MessageWrapperBase.mjs";
 import {PUBSUB_CONTROL} from "../rpc/control.mjs";
 
 

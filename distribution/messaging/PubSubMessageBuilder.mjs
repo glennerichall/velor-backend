@@ -2,10 +2,11 @@ import {
     PUBSUB_CONTROL,
     PUBSUB_CONTROL_RESPONSE,
 } from "../rpc/control.mjs";
+
 import {PubSubMessageWrapper} from "./PubSubMessageWrapper.mjs";
-import {MessageWrapperBase} from "../../../messaging/message/MessageWrapperBase.mjs";
+import {MessageWrapperBase} from "../../messaging/message/MessageWrapperBase.mjs";
 import {signData} from "velor/utils/signature.mjs";
-import {signMessage} from "../../../messaging/message/signMessage.mjs";
+import {signMessage} from "../../messaging/message/signMessage.mjs";
 
 import * as controls from "../rpc/control.mjs";
 

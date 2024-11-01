@@ -1,11 +1,13 @@
 import {publishPubSubMessage} from "../actions/publishPubSubMessage.mjs";
 import {
     validateMessage
-} from "../../../messaging/message/isMessage.mjs";
-import {MESSAGE_TYPE_RPC_CALL} from "../../../messaging/constants.mjs";
+} from "../../messaging/message/isMessage.mjs";
+import {MESSAGE_TYPE_RPC_CALL} from "../../messaging/constants.mjs";
+
 import {
     getRpcSignaling
 } from "../../../server/application/services/serverServices.mjs";
+
 import {getChannelForRpc} from "../channels/channels.mjs";
 import {
     getMessageBuilder,

@@ -1,20 +1,13 @@
 import {BullMessageQueue} from "../../distribution/impl/BullMessageQueue.mjs";
-import {getEnvValue} from "velor/utils/injection/baseServices.mjs";
+import {getEnvValue, getEnvValueIndirect, getNodeEnv} from "velor/utils/injection/baseServices.mjs";
+import {REDIS_CONNECTION_STRING, REDIS_QUEUE_NAME, REDISCLOUD_URL_VAR} from "../services/backendEnvKeys.mjs";
 
 export function createMessageQueueInstance(services) {
 
-    const {
-        NODE_ENV,
-        ZUPFE_REDISCLOUD_URL_VAR,
-    } = env;
+    const nodeEnv = getNodeEnv(services);
+    const redisQueueName = getEnvValue(services, REDIS_QUEUE_NAME) ?? nodeEnv + ".jobs";
+    const connectionString = getEnvValue(REDIS_CONNECTION_STRING) ??
+        getEnvValueIndirect(services, REDISCLOUD_URL_VAR);
 
-
-    const redisQueueName = getEnvValue(REDIS_QUEUE_NAME)
-
-    const {
-        ZUPFE_REDIS_QUEUE_NAME = NODE_ENV + ".jobs",
-        REDIS_CONNECTION_STRING = env[ZUPFE_REDISCLOUD_URL_VAR],
-    } = env;
-
-    return new BullMessageQueue(REDIS_CONNECTION_STRING, ZUPFE_REDIS_QUEUE_NAME);
+    return new BullMessageQueue(connectionString, redisQueueName);
 }

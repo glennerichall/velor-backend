@@ -1,6 +1,6 @@
 import {composeAutoSendMessageFactoryProvider} from "./composeAutoSendMessageFactoryProvider.mjs";
-import {forUserId} from "../../distribution/channels/matchingRules.mjs";
 
+import {forUserId} from "../../distribution/channels/matchingRules.mjs";
 
 import {getClientTracker} from "../../../server/application/services/serverServices.mjs";
 

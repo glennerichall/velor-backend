@@ -1,5 +1,5 @@
 import {BullRedis} from "./BullRedis.mjs";
-import {getLogger} from "nodemailer/lib/shared/index.js";
+import {getLogger} from "velor/utils/injection/services.mjs";
 
 const KEEP_QUEUE_LENGTH = 10;
 

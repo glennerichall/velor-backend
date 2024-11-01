@@ -1,6 +1,6 @@
 import {
     validateMessage
-} from "../../../messaging/message/isMessage.mjs";
+} from "../../messaging/message/isMessage.mjs";
 
 import {getPubSub} from "../../application/services/backendServices.mjs";
 

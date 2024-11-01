@@ -1,6 +1,7 @@
 import {
     getPubSubApi
 } from "../../../worker/application/services/workerServices.mjs";
+
 import {NotImplementedError} from "velor/utils/errors/NotImplementedError.mjs";
 
 export function composeSendThroughServerClient(services, ...channels) {

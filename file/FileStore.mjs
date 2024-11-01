@@ -14,20 +14,14 @@ import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 const URL_EXPIRATION_SECONDS = 60 * 1; // 1 minutes to upload or download
 
 export class FileStore {
-    constructor(bucket, options = process.env) {
+    constructor(bucket, options) {
         this._s3client = null;
         this._bucket = bucket;
 
         const {
-            ZUPFE_AWS_ACCESS_KEY_ID,
-            ZUPFE_AWS_SECRET_ACCESS_KEY,
-            ZUPFE_AWS_REGION
-        } = options;
-
-        const {
-            accessKeyId = ZUPFE_AWS_ACCESS_KEY_ID,
-            secretAccessKey = ZUPFE_AWS_SECRET_ACCESS_KEY,
-            region = ZUPFE_AWS_REGION
+            accessKeyId,
+            secretAccessKey,
+            region
         } = options;
 
         this._accessKeyId = accessKeyId;
