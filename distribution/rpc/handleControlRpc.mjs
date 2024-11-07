@@ -3,7 +3,7 @@ import {
     PUBSUB_CONTROL_CALL_METHOD
 } from "./control.mjs";
 import {replyToRequest} from "./replyToRequest.mjs";
-import {getLogger} from "velor/utils/injection/services.mjs";
+import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 
 

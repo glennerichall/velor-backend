@@ -1,4 +1,4 @@
-import {tryInsertUnique} from "velor/database/database.mjs";
+import {tryInsertUnique} from "velor-utils/database/database.mjs";
 
 export async function queryFilesByHash(client, schema, hash) {
     const res = await client.query(`

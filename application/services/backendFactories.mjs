@@ -18,7 +18,7 @@ import {
 } from "./backendServiceKeys.mjs";
 import {s_messageCoder} from "velor-api/api/services/apiServiceKeys.mjs";
 import {createMessageBuilderInstance} from "velor-api/api/factories/createMessageBuilderInstance.mjs";
-import {Synchronizer} from "velor/utils/sync.mjs";
+import {Synchronizer} from "velor-utils/utils/sync.mjs";
 import {createRpcSignalingManager} from "../factories/createRpcSignalingManager.mjs";
 
 export const backendFactories = {

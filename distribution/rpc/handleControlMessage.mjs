@@ -6,7 +6,7 @@ import {
 import {handleControlRpc} from "./handleControlRpc.mjs";
 import {handleControlSubscribe} from "./handleControlSubscribe.mjs";
 import {handleControlUnsubscribe} from "./handleControlUnsubscribe.mjs";
-import {getLogger} from "velor/utils/injection/services.mjs";
+import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 const handlers = {
     [PUBSUB_CONTROL_CALL]: handleControlRpc,

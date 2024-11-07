@@ -1,4 +1,4 @@
-import {getLogger} from "velor/utils/injection/services.mjs";
+import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 export class ClientIndex {
     #key;

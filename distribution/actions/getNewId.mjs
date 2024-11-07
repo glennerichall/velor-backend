@@ -1,11 +1,11 @@
 import {
     MAX_RANDOM_INT,
     randomInt
-} from "velor/utils/platform.mjs";
+} from "velor-utils/utils/platform.mjs";
 import {
     packInts,
     unpackInts
-} from "velor/utils/math.mjs";
+} from "velor-utils/utils/math.mjs";
 
 export const MAX_SERVERS = 10000;
 

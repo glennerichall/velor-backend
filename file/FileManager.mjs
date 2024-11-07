@@ -8,7 +8,7 @@ import {
     SUCCESS_FILE_VALIDATED
 } from "./errors.mjs";
 
-import {getLogger} from "velor/utils/injection/services.mjs";
+import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 export class FileManager {
     constructor(alloctable, filestore) {

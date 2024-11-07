@@ -6,5 +6,5 @@ export const s_logger = 'logger';
 export const s_pubSub = 'pubSub';
 export const s_messageBuilder = 'messageBuilder';
 export const s_clientProvider = 'clientProvider';
-export const s_sync = 's_sync';
+export const s_sync = 'sync';
 export const s_rpcSignaling = 'rpcSignaling';

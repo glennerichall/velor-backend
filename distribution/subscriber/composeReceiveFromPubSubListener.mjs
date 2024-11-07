@@ -3,7 +3,7 @@ import {PubSubMessageBuilder} from "../messaging/PubSubMessageBuilder.mjs";
 import {
     getMessageBuilder
 } from "../../application/services/backendServices.mjs";
-import {getLogger} from "velor/utils/injection/services.mjs";
+import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 // A publication handler is a function that receives messages from a particular channel, the one
 // that is currently subscribe in this case. The publication handler also

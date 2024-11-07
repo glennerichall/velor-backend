@@ -1,5 +1,5 @@
 import {getChannelForSubscriptions,} from "../channels.mjs";
-import {EmitterMixin} from "velor/utils/Emitter.mjs";
+import {EmitterMixin} from "velor-utils/utils/Emitter.mjs";
 
 
 export const PubSubMixin = Clazz => class extends EmitterMixin(Clazz) {

@@ -3,7 +3,7 @@ import {
 } from "../../../shared/constants/urls.mjs";
 
 import {ApiRequestBase} from "velor-api/api/api/ApiRequestBase.mjs";
-import {btoa} from "velor/utils/string.mjs";
+import {btoa} from "velor-utils/utils/string.mjs";
 
 export class PubSubApi extends ApiRequestBase {
     constructor(...args) {

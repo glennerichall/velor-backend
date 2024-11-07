@@ -1,6 +1,6 @@
 import {
     getProvider
-} from "velor/utils/injection/baseServices.mjs";
+} from "velor-utils/utils/injection/baseServices.mjs";
 
 import {
     s_clientProvider,

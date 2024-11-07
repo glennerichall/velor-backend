@@ -1,4 +1,4 @@
-import {getProvider} from "velor/utils/injection/baseServices.mjs";
+import {getProvider} from "velor-utils/utils/injection/baseServices.mjs";
 
 import {s_databaseManager} from "../services/backendServiceKeys.mjs";
 

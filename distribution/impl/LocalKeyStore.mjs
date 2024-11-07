@@ -2,7 +2,7 @@ import {
     MapArrayMixin,
     MapMapMixin,
     MapSetMixin
-} from "velor/utils/map.mjs";
+} from "velor-utils/utils/map.mjs";
 
 export class LocalKeyStore extends MapArrayMixin(MapMapMixin(MapSetMixin(Map))) {
 

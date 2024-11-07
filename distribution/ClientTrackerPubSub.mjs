@@ -5,7 +5,7 @@ import {requestUnsubscription} from "./rpc/requestUnsubscription.mjs";
 import {unsubscribe} from "./actions/unsubscribe.mjs";
 import {subscribe} from "./actions/subscribe.mjs";
 
-import {getServices} from "velor/utils/injection/ServicesContext.mjs";
+import {getServices} from "velor-utils/utils/injection/ServicesContext.mjs";
 import {ClientProviderPubSub} from "./ClientProviderPubSub.mjs";
 import {getPubSub} from "../application/services/backendServices.mjs";
 

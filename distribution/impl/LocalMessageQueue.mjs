@@ -1,5 +1,5 @@
-import {Emitter} from "velor/utils/Emitter.mjs";
-import {getLogger} from "velor/utils/injection/services.mjs";
+import {Emitter} from "velor-utils/utils/Emitter.mjs";
+import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 export class LocalMessageQueue {
     #ready;

@@ -13,7 +13,13 @@ import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 // Change this value to adjust the signed URL's expiration
 const URL_EXPIRATION_SECONDS = 60 * 1; // 1 minutes to upload or download
 
-export class FileStore {
+function handleError(e) {
+    if (e.Code === "AccessDenied") {
+        throw e;
+    }
+}
+
+export class AWSFileStore {
     constructor(bucket, options) {
         this._s3client = null;
         this._bucket = bucket;
@@ -94,6 +100,7 @@ export class FileStore {
             const response = await this.getClient().send(command)
             return response.Body;
         } catch (e) {
+            handleError(e);
             return null;
         }
     }
@@ -112,6 +119,7 @@ export class FileStore {
                 creation: response.LastModified
             };
         } catch (e) {
+            handleError(e);
             return null;
         }
     }
@@ -129,6 +137,7 @@ export class FileStore {
                 creation: response.LastModified
             };
         } catch (e) {
+            handleError(e);
             return null;
         }
     }
@@ -155,8 +164,9 @@ export class FileStore {
                 Key
             });
             const response = await this.getClient().send(command)
-            return response.Body;
+            return true;
         } catch (e) {
+            handleError(e);
             return null;
         }
     }
@@ -176,6 +186,7 @@ export class FileStore {
             await this.getClient().send(command);
             return true;
         } catch (e) {
+            handleError(e);
             return false;
         }
     }
@@ -207,9 +218,7 @@ export class FileStore {
 
             return allObjects;
         } catch (e) {
-            if (process.env.RUN_COMMAND) {
-                throw e;
-            }
+            handleError(e);
             return null;
         }
     }
@@ -235,6 +244,7 @@ export class FileStore {
             await this.getClient().send(command)
             return true;
         } catch (e) {
+            handleError(e);
             if (e.name === 'NotFound') {
                 return false;
             } else {

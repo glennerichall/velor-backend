@@ -1,4 +1,4 @@
-import {NotImplementedError} from "velor/utils/errors/NotImplementedError.mjs";
+import {NotImplementedError} from "velor-utils/utils/errors/NotImplementedError.mjs";
 
 export class RedisKeyStore {
     constructor(redis) {

@@ -1,5 +1,5 @@
 import {composePublishToPubSubClient} from "./subscriber/composePublishToPubSubClient.mjs";
-import {getServices} from "velor/utils/injection/ServicesContext.mjs";
+import {getServices} from "velor-utils/utils/injection/ServicesContext.mjs";
 
 export class ClientProviderPubSub {
     constructor() {}

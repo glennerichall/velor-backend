@@ -15,7 +15,7 @@ import {
     getPubSub
 } from "../../application/services/backendServices.mjs";
 
-import {getLogger} from "velor/utils/injection/services.mjs";
+import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 export async function readStream(services, type, data, ...channels) {
 
