@@ -1,21 +1,13 @@
-import {submitRpcThroughPubSub} from "./submitRpcThroughPubSub.mjs";
-
-import {RPC_REQUEST_STREAM} from "../../../shared/constants/commands.mjs";
-
 import {MessageWrapper} from "velor-messaging/messaging/message/MessageWrapper.mjs";
-
-import {
-    getStreamHandler
-} from "../../../server/application/services/serverServices.mjs";
-
 import {getChannelForStream} from "../channels.mjs";
 
+import {getLogger} from "velor-services/injection/services.mjs";
 import {
     getMessageBuilder,
-    getPubSub
+    getPubSub,
+    getStreamHandler
 } from "../../application/services/backendServices.mjs";
 
-import {getLogger} from "velor-utils/utils/injection/services.mjs";
 
 export async function readStream(services, type, data, ...channels) {
 

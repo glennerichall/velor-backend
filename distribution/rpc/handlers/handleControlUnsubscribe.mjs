@@ -1,4 +1,4 @@
-import {unsubscribe} from "../actions/unsubscribe.mjs";
+import {unsubscribe} from "../../actions/unsubscribe.mjs";
 
 export async function handleControlUnsubscribe(services, wsClient, control) {
     const content = control.getData();
@@ -7,3 +7,4 @@ export async function handleControlUnsubscribe(services, wsClient, control) {
     } = content;
     return unsubscribe(services, wsClient, ...channels);
 }
+

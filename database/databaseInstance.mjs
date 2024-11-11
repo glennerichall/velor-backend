@@ -3,7 +3,7 @@ import * as tokens from "../persistence/tokens.mjs";
 import * as system from "../persistence/system.mjs";
 import {DatabaseManager} from "velor-utils/database/DatabaseManager.mjs";
 import {ENV_TEST} from "velor-utils/env.mjs";
-import {getEnvValue, getNodeEnv} from "velor-utils/utils/injection/baseServices.mjs";
+import {getEnvValue, getNodeEnv} from "velor-services/injection/baseServices.mjs";
 import {
     DATABASE_CONNECTION_STRING,
     DATABASE_SCHEMA,

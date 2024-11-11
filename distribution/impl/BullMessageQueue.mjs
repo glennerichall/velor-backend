@@ -1,5 +1,5 @@
 import {BullRedis} from "./BullRedis.mjs";
-import {getLogger} from "velor-utils/utils/injection/services.mjs";
+import {getLogger} from "velor-services/injection/services.mjs";
 
 const KEEP_QUEUE_LENGTH = 10;
 

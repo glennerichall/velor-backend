@@ -8,25 +8,27 @@ import {
 import {PubSubMessageBuilder} from "./PubSubMessageBuilder.mjs";
 
 export class PubSubMessageFactory {
+    #builder;
+    
     constructor(builder) {
-        this._builder = new PubSubMessageBuilder(builder);
+        this.#builder = new PubSubMessageBuilder(builder);
     }
 
     callMethod(method, args) {
-        return this._builder.newControlRequest(PUBSUB_CONTROL_CALL, {
+        return this.#builder.newControlRequest(PUBSUB_CONTROL_CALL, {
             [PUBSUB_CONTROL_CALL_METHOD]: method,
             [PUBSUB_CONTROL_CALL_ARGS]: args,
         });
     }
 
     subscribe(...channels) {
-        return this._builder.newControlRequest(PUBSUB_CONTROL_SUBSCRIBE, {
+        return this.#builder.newControlRequest(PUBSUB_CONTROL_SUBSCRIBE, {
             channels
         });
     }
 
     unsubscribe(...channels) {
-        return this._builder.newControlRequest(PUBSUB_CONTROL_UNSUBSCRIBE, {
+        return this.#builder.newControlRequest(PUBSUB_CONTROL_UNSUBSCRIBE, {
             channels
         });
     }

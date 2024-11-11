@@ -8,3 +8,4 @@ export const s_messageBuilder = 'messageBuilder';
 export const s_clientProvider = 'clientProvider';
 export const s_sync = 'sync';
 export const s_rpcSignaling = 'rpcSignaling';
+export const s_messageStreamHandler = 'messageStreamHandler';

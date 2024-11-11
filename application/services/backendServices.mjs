@@ -1,6 +1,6 @@
 import {
     getProvider
-} from "velor-utils/utils/injection/baseServices.mjs";
+} from "velor-services/injection/baseServices.mjs";
 
 import {
     s_clientProvider,
@@ -8,7 +8,9 @@ import {
     s_keyStore,
     s_messageBuilder,
     s_messageQueue,
-    s_pubSub, s_rpcSignaling,
+    s_messageStreamHandler,
+    s_pubSub,
+    s_rpcSignaling,
 } from "./backendServiceKeys.mjs";
 
 export function getDatabase(services) {
@@ -37,4 +39,8 @@ export function getPubSub(services) {
 
 export function getRpcSignaling(services) {
     return getProvider(services)[s_rpcSignaling]();
+}
+
+export function getStreamHandler(services) {
+    return getProvider(services)[s_messageStreamHandler]();
 }

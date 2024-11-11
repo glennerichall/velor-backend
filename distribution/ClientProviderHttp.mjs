@@ -1,5 +1,5 @@
-import {composeSendThroughServerClient} from "./subscriber/composeSendThroughServerClient.mjs";
-import {getServices} from "velor-utils/utils/injection/ServicesContext.mjs";
+import {composeSendThroughServerClient} from "./composers/composeSendThroughServerClient.mjs";
+import {getServices} from "velor-services/injection/ServicesContext.mjs";
 
 export class ClientProviderHttp {
     constructor() {

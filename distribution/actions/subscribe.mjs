@@ -1,6 +1,8 @@
-import {subscribeTransportToChannel} from "../subscriber/subscribeTransportToChannel.mjs";
+import {subscribeTransportToChannel} from "./subscribeTransportToChannel.mjs";
+
 
 export async function subscribe(services, transport, ...channels) {
+
     channels = channels.filter(channel => !!channel);
     if (channels.length > 0) {
         let promises = [];
@@ -11,5 +13,6 @@ export async function subscribe(services, transport, ...channels) {
         return await Promise.all(promises);
     }
 
-    return null;
+    return [];
 }
+

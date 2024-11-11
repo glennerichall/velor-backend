@@ -1,7 +1,4 @@
-import {
-    getChannelForRpc
-} from "../channels.mjs";
-
+import {getChannelForRpc} from "../channels.mjs";
 import {
     getMessageBuilder,
     getPubSub
@@ -10,7 +7,6 @@ import {
 export function replyToRequest(services, message, response) {
     const pubSub = getPubSub(services);
     const messageBuilder = getMessageBuilder(services);
-
     return pubSub.publish(
         getChannelForRpc(message.id),
         messageBuilder.newReply(message, response).buffer,

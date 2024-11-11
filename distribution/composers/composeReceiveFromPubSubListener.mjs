@@ -1,16 +1,15 @@
-import {handleControlMessage} from "../rpc/handleControlMessage.mjs";
 import {PubSubMessageBuilder} from "../messaging/PubSubMessageBuilder.mjs";
-import {
-    getMessageBuilder
-} from "../../application/services/backendServices.mjs";
-import {getLogger} from "velor-utils/utils/injection/services.mjs";
+import {getLogger} from "velor-services/injection/services.mjs";
+import {getMessageBuilder} from "../../application/services/backendServices.mjs";
+import {handleControlMessage} from "../rpc/handlers/handleControlMessage.mjs";
 
 // A publication handler is a function that receives messages from a particular channel, the one
 // that is currently subscribe in this case. The publication handler also
 // handles commands between servers. Setting the user id of logged clients for instance
 // or getting info from subscribed users of a channel. It sends messages through the same
 // subscribed channel.
-export function composeReceiveFromPubSubListener(services, transport) {
+
+export function composeReceiveFromPubSubListener(services, subscriber) {
 
     const messageBuilder = getMessageBuilder(services);
 
@@ -24,10 +23,14 @@ export function composeReceiveFromPubSubListener(services, transport) {
         try {
             let message = new PubSubMessageBuilder(messageBuilder).unpack(buffer);
             if (message.isControl) {
-                await handleControlMessage(services, transport, message);
+                try {
+                    await handleControlMessage(services, subscriber, message);
+                } catch (e) {
+                    
+                }
             } else {
                 // send binary data through ws.
-                return transport.send(message);
+                return subscriber.send(message);
             }
         } catch (e) {
             getLogger(services).error(e.stack);

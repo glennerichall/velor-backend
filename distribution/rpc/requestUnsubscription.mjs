@@ -5,5 +5,5 @@ import {getMessageBuilder} from "../../application/services/backendServices.mjs"
 export async function requestUnsubscription(services, channelsToTarget, channelsToSubscribe) {
     const messageBuilder = getMessageBuilder(services);
     const message = new PubSubMessageFactory(messageBuilder).unsubscribe(...channelsToSubscribe);
-    return await publishPubSubMessage(services, message, ...channelsToTarget);
+    return publishPubSubMessage(services, message, ...channelsToTarget);
 }

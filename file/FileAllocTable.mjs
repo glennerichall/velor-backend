@@ -35,13 +35,20 @@ export class FileAllocTable {
         }
     }
 
-    transact(callback) {
-        return this.#database.transact(db => {
-            return callback(this.#getOperations(db));
-        })
+    async transact(callback) {
+        return new Promise((resolve, reject) => {
+            this.#database.transact(db => {
+                try {
+                    let result = callback(this.#getOperations(db));
+                    resolve(result);
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        });
     }
 
-    open() {
+    async open() {
         return this.#getOperations(this.#database);
     }
 

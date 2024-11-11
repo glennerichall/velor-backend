@@ -1,6 +1,6 @@
 import {SubscriptionIndex} from "./SubscriptionIndex.mjs";
-import {getUuid} from "velor-utils/utils/injection/ServicesContext.mjs";
-import {getLogger} from "velor-utils/utils/injection/services.mjs";
+import {getUuid} from "velor-services/injection/ServicesContext.mjs";
+import {getLogger} from "velor-services/injection/services.mjs";
 import {globToRegExp} from "velor-utils/utils/string.mjs";
 
 export class LocalPubSub {

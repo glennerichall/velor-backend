@@ -1,6 +1,6 @@
 import winston from "winston";
 
-import {getEnvValue, isProduction} from "velor-utils/utils/injection/baseServices.mjs";
+import {getEnvValue, isProduction} from "velor-services/injection/baseServices.mjs";
 
 import {LOG_LEVEL} from "../services/backendEnvKeys.mjs";
 

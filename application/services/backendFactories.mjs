@@ -14,12 +14,16 @@ import {
     s_logger,
     s_messageBuilder,
     s_messageQueue,
-    s_pubSub, s_rpcSignaling, s_sync,
+    s_messageStreamHandler,
+    s_pubSub,
+    s_rpcSignaling,
+    s_sync,
 } from "./backendServiceKeys.mjs";
 import {s_messageCoder} from "velor-api/api/services/apiServiceKeys.mjs";
 import {createMessageBuilderInstance} from "velor-api/api/factories/createMessageBuilderInstance.mjs";
 import {Synchronizer} from "velor-utils/utils/sync.mjs";
 import {createRpcSignalingManager} from "../factories/createRpcSignalingManager.mjs";
+import {ReadStreamHandler} from "velor-messaging/messaging/managers/ReadStreamHandler.mjs";
 
 export const backendFactories = {
     [s_pubSub]: createLocalPubSubInstance,
@@ -32,4 +36,5 @@ export const backendFactories = {
     [s_messageCoder]: createMessageCoderInstance,
     [s_sync]: Synchronizer,
     [s_rpcSignaling]: createRpcSignalingManager,
+    [s_messageStreamHandler]: ReadStreamHandler,
 };

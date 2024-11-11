@@ -1,7 +1,7 @@
 import {findSubscriptionsForChannel} from "./findSubscriptionsForChannel.mjs";
-import {getSubscriptionSet} from "../subscriber/subscriber.mjs";
+import {getSubscriptionSet} from "./subscriber.mjs";
 
-export async function getSubscriptions(subscriber, ...channels) {
+export function getSubscriptions(subscriber, ...channels) {
     let subscriptions;
 
     if (channels.length > 0) {

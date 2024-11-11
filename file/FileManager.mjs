@@ -8,293 +8,315 @@ import {
     SUCCESS_FILE_VALIDATED
 } from "./errors.mjs";
 
-import {getLogger} from "velor-utils/utils/injection/services.mjs";
+import {getBaseServicesProvider} from 'velor-services/injection/basePolicy.mjs';
 
-export class FileManager {
-    constructor(alloctable, filestore) {
-        this._fs = filestore;
-        this._table = alloctable;
-    }
+export const FileManagerPolicy = policy => {
 
-    get fileStore() {
-        return this._fs;
-    }
+    const {
+        getLogger
+    } = getBaseServicesProvider(policy);
 
-    async createEntry(...args) {
-        return this._table.transact(async ({createEntry}) => {
-            const entry = await createEntry(...args);
-            const uploadURL = await this._fs.getPostUrl(entry.bucketname);
-            return {
-                entry,
-                uploadURL
-            };
-        });
-    }
 
-    async getFileSignedUrl(bucketname) {
-        return this._fs.getSignedUrl(bucketname);
-    }
+    return class FileManager {
+        #fileStore;
+        #allocTable;
 
-    async deleteFiles(...bucketnames) {
-        return this._table.transact(async ({deleteEntries}) => {
-            const entries = await deleteEntries(bucketnames);
-            const ok = await this._fs.deleteObjects(bucketnames);
-            if (!ok) {
-                throw new Error("unable to delete file from store");
+        constructor(alloctable, filestore) {
+            this.#fileStore = filestore;
+            this.#allocTable = alloctable;
+        }
+
+        get fileStore() {
+            return this.#fileStore;
+        }
+
+        async createEntry(...args) {
+            return this.#allocTable.transact(async ({createEntry}) => {
+                const entry = await createEntry(...args);
+                const uploadURL = await this.#fileStore.getPostUrl(entry.bucketname);
+                return {
+                    entry,
+                    uploadURL
+                };
+            });
+        }
+
+        async getFileSignedUrl(bucketname) {
+            return this.#fileStore.getSignedUrl(bucketname);
+        }
+
+        async deleteFiles(...bucketnames) {
+            return this.#allocTable.transact(async ({deleteEntries}) => {
+                const entries = await deleteEntries(bucketnames);
+                const ok = await this.#fileStore.deleteObjects(bucketnames);
+                if (!ok) {
+                    throw new Error("unable to delete file from store");
+                }
+                return entries;
+            });
+        }
+
+        async removeFiles(...bucketnames) {
+            const {removeEntries} = await this.#allocTable.open();
+            return removeEntries(bucketnames);
+        }
+
+        async setFileAvailable(bucketname) {
+            getLogger(this).debug(`Setting file available ${bucketname}`);
+            const {setAvailable} = await this.#allocTable.open();
+            return setAvailable(bucketname);
+        }
+
+        async setFileStatus(bucketname, status, size, hash) {
+            const {setStatus} = await this.#allocTable.open();
+            return setStatus(bucketname, status, size, hash);
+        }
+
+        async setFileRejected(bucketname, size, hash) {
+            getLogger(this).debug(`Setting file rejected ${bucketname}`);
+            const {setRejected} = await this.#allocTable.open();
+            return setRejected(bucketname, size, hash);
+        }
+
+        async getEntries(bucketnames) {
+            const {getEntries, getAllEntries} = await this.#allocTable.open();
+            return bucketnames ? getEntries(bucketnames) : getAllEntries();
+        }
+
+        async getEntriesByHash(hash) {
+            const {getEntriesByHash} = await this.#allocTable.open();
+            return getEntriesByHash(hash);
+        }
+
+        async readFile(bucketname) {
+            return this.#fileStore.getObject(bucketname);
+        }
+
+        async updateCreationTime(bucketname, datetime = new Date()) {
+            const {setCreation} = await this.#allocTable.open();
+            return setCreation(bucketname, datetime);
+        }
+
+        async cleanFileStore() {
+
+            getLogger(this).info(`Removing files from file store not in database`);
+
+            await this.#allocTable.transact(async ({getAllEntries}) => {
+
+                getLogger(this).info('Getting all files from database');
+
+                const entries = await getAllEntries();
+                const bucketnames = entries.map(x => x.bucketname);
+
+                if (entries.length > 0) {
+                    getLogger(this).info(`${bucketnames.length} file(s) in database`);
+                } else {
+                    getLogger(this).info('No file in database, removing all files from file store');
+                }
+
+                let files = await this.#fileStore.listObjects();
+                if (files === null) {
+                    getLogger(this).error(`Unable to list files from file store`);
+                    return;
+                }
+
+
+                if (files.length > 0) {
+                    getLogger(this).info(`${files.length} file(s) in file store`);
+                } else {
+                    getLogger(this).info('No file in file store');
+                }
+
+
+                // find bucket files not in database
+                const toRemove = [];
+                for (let file of files) {
+                    if (!bucketnames.includes(file)) {
+                        toRemove.push(file);
+                    }
+                }
+
+                // remove them from file store
+                if (toRemove.length > 0) {
+                    getLogger(this).info(`Removing ${toRemove.length} file(s) from file store`)
+
+                    const ok = await this.#fileStore.deleteObjects(toRemove);
+                    if (!ok) {
+                        getLogger(this).error(`Unable to remove ${toRemove.length} file(s) from file store`);
+                    }
+                } else {
+                    getLogger(this).info(`No file to remove, all clean`);
+                }
+            });
+        }
+
+        async cleanDatabase() {
+
+            getLogger(this).info('Cleaning database for files not in file store');
+            getLogger(this).info('Listing files from file store');
+
+            const bucketnames = await this.#fileStore.listObjects();
+            if (bucketnames === null) {
+                getLogger(this).error('Unable to list files from file store');
             }
-            return entries;
-        });
-    }
 
-    async removeFiles(...bucketnames) {
-        const {removeEntries} = this._table.open();
-        return removeEntries(bucketnames);
-    }
+            await this.#allocTable.transact(async ({deleteAllEntries, keepEntries}) => {
+                let result;
 
-    async setFileAvailable(bucketname) {
-        const {setAvailable} = this._table.open();
-        return setAvailable(bucketname);
-    }
+                // remove database files not in file store bucket
+                if (bucketnames.length === 0) {
+                    getLogger(this).info('No files in file store, purging all files from database');
 
-    async setFileStatus(bucketname, status, size, hash) {
-        const {setStatus} = this._table.open();
-        return setStatus(bucketname, status, size, hash);
-    }
+                    result = await deleteAllEntries();
+                } else {
+                    result = await keepEntries(bucketnames);
+                }
 
-    async setFileRejected(bucketname, size, hash) {
-        const {setRejected} = this._table.open();
-        return setRejected(bucketname, size, hash);
-    }
+                if (result > 0) {
+                    getLogger(this).info(`Removed ${result} files from database`);
+                } else {
+                    getLogger(this).info('No file to remove, all clean');
+                }
+            });
+        }
 
-    async getEntries(bucketnames) {
-        const {getEntries, getAllEntries} = this._table.open();
-        return bucketnames ? getEntries(bucketnames) : getAllEntries();
-    }
+        async cleanOldFiles({numDays = 3} = {}) {
+            getLogger(this).info(`Cleaning database from old files not uploaded since ${numDays} day(s)`);
 
-    async getEntriesByHash(hash) {
-        const {getEntriesByHash} = this._table.open();
-        return getEntriesByHash(hash);
-    }
+            await this.#allocTable.transact(async ({deleteOldEntries}) => {
+                const result = await deleteOldEntries(numDays);
+                if (result > 0) {
+                    getLogger(this).info(`Deleted ${result} file(s) from database that where not uploaded more than ${numDays} days ago`);
+                } else {
+                    getLogger(this).info('No file to remove, all clean');
+                }
+            });
+        }
 
-    async readFile(bucketname) {
-        return this._fs.getObject(bucketname);
-    }
+        async processMissedNewFiles({numDays = 3} = {}) {
+            // process files that were not processed for validation
+            getLogger(this).info(`Processing files that were not processed for validation since ${numDays} day(s)`);
 
-    async updateCreationTime(bucketname, datetime = new Date()) {
-        const {setCreation} = this._table.open();
-        return setCreation(bucketname, datetime);
-    }
+            // Do not run in a transaction as this takes a long time
+            // and we want every file to be updated in the database
+            // file by file and not in batch so if it fails somehow
+            // we do not need to update from beginning.
 
-    async cleanFileStore() {
-
-        getLogger(this).info(`Removing files from S3 not in database`);
-
-        await this._table.transact(async ({getAllEntries}) => {
-
-            getLogger(this).info('Getting all files from database');
-
-            const entries = await getAllEntries();
-            const bucketnames = entries.map(x => x.bucketname);
+            const {getUnprocessedEntries} = await this.#allocTable.open();
+            const entries = await getUnprocessedEntries(numDays);
 
             if (entries.length > 0) {
-                getLogger(this).info(`${bucketnames.length} file(s) in database`);
+                getLogger(this).info(`Starting process of ${entries.length} pending file(s)`);
             } else {
-                getLogger(this).info('No file in database, removing all files from S3');
+                getLogger(this).info(`Not file to process, all clean`);
             }
 
-            let files = await this._fs.listObjects();
-            if (files === null) {
-                console.error(`Unable to list files from S3`);
-            }
+            let accepted = [], rejected = [], notFound = [];
+            let i = 0;
+            for (let {bucketname} of entries) {
+                i++;
 
+                const {status} = await this.processFile(bucketname);
 
-            if (files.length > 0) {
-                getLogger(this).info(`${files.length} file(s) in S3`);
-            } else {
-                getLogger(this).info('No file in S3');
-            }
-
-
-            // find bucket files not in database
-            const toRemove = [];
-            for (let file of files) {
-                if (!bucketnames.includes(file)) {
-                    toRemove.push(file);
+                switch (status) {
+                    case SUCCESS_FILE_PROCESSED:
+                        accepted.push(bucketname);
+                        break;
+                    case ERROR_FILE_UPLOAD_FAILED:
+                    case ERROR_FILE_NOT_FOUND:
+                        notFound.push(bucketname);
+                        break;
+                    case ERROR_FILE_INFECTED:
+                    case ERROR_FILE_INVALID:
+                        rejected.push(bucketname);
+                        break;
                 }
+
+                getLogger(this).info(`(${i}/${entries.length})\t\t${bucketname}\t${status}`);
             }
 
-            // remove them from s3
-            if (toRemove.length > 0) {
-
-                getLogger(this).info(`Removing ${toRemove.length} file(s) from S3`)
-
-                const ok = await this._fs.deleteObjects(toRemove);
-                if (!ok) {
-                    console.error(`Unable to remove ${toRemove.length} file(s) from S3`);
-                }
-            } else {
-                getLogger(this).info(`No file to remove, all clean`);
+            if (entries.length > 0) {
+                getLogger(this).info(`Processed ${entries.length} file(s) with ${accepted.length} accepted file(s) and ${rejected.length} rejected file(s)`);
             }
-        });
-    }
-
-    async cleanDatabase() {
-
-        getLogger(this).info('Cleaning database for files not in S3');
-        getLogger(this).info('Listing files from S3');
-
-        const bucketnames = await this._fs.listObjects();
-        if (bucketnames === null) {
-            console.error('Unable to list files from S3');
         }
 
-        await this._table.transact(async ({deleteAllEntries, keepEntries}) => {
-            let result;
-
-            // remove database files not in s3 bucket
-            if (bucketnames.length === 0) {
-                getLogger(this).info('No files in S3, purging all files from database');
-
-                result = await deleteAllEntries();
-            } else {
-                result = await keepEntries(bucketnames);
-            }
-
-            if (result > 0) {
-                getLogger(this).info(`Removed ${result} files from database`);
-            } else {
-                getLogger(this).info('No file to remove, all clean');
-            }
-        });
-    }
-
-    async cleanOldFiles({numDays = 3} = {}) {
-        getLogger(this).info(`Cleaning database from old files not uploaded since ${numDays} day(s)`);
-
-        await this._table.transact(async ({deleteOldEntries}) => {
-            const result = await deleteOldEntries(numDays);
-            if (result > 0) {
-                getLogger(this).info(`Deleted ${result} file(s) from database that where not uploaded more than ${numDays} days ago`);
-            } else {
-                getLogger(this).info('No file to remove, all clean');
-            }
-        });
-    }
-
-    async processMissedNewFiles({numDays = 3} = {}) {
-        // process files that were not processed for validation
-        getLogger(this).info(`Processing files that were not processed for validation since ${numDays} day(s)`);
-
-        // Do not run in a transaction as this takes a long time
-        // and we want every file to be updated in the database
-        // file by file and not in batch so if it fails somehow
-        // we do not need to update from beginning.
-
-        const {getUnprocessedEntries} = this._table.open();
-        const entries = await getUnprocessedEntries(numDays);
-
-        if (entries.length > 0) {
-            getLogger(this).info(`Starting process of ${entries.length} pending file(s)`);
-        } else {
-            getLogger(this).info(`Not file to process, all clean`);
+        async _validateFile(entry, file) {
+            return SUCCESS_FILE_VALIDATED;
         }
 
-        let accepted = [], rejected = [], notFound = [];
-        let i = 0;
-        for (let {bucketname} of entries) {
-            i++;
-
-            const {status} = await this.processFile(bucketname);
-
-            switch (status) {
-                case SUCCESS_FILE_PROCESSED:
-                    accepted.push(bucketname);
-                    break;
-                case ERROR_FILE_UPLOAD_FAILED:
-                case ERROR_FILE_NOT_FOUND:
-                    notFound.push(bucketname);
-                    break;
-                case ERROR_FILE_INFECTED:
-                case ERROR_FILE_INVALID:
-                    rejected.push(bucketname);
-                    break;
-            }
-
-            getLogger(this).info(`(${i}/${entries.length})\t\t${bucketname}\t${status}`);
+        async _processFile(entry, file) {
+            return SUCCESS_FILE_PROCESSED;
         }
 
-        if (entries.length > 0) {
-            getLogger(this).info(`Processed ${entries.length} file(s) with ${accepted.length} accepted file(s) and ${rejected.length} rejected file(s)`);
-        }
-    }
+        async processFile(bucketname) {
+            const {
+                deleteEntry, setRejected,
+                setReady, getEntry
+            } = await this.#allocTable.open();
 
-    async _validateFile(entry, file) {
-        return SUCCESS_FILE_VALIDATED;
-    }
+            getLogger(this).debug(`Processing file ${bucketname}`);
+            let entry = await getEntry(bucketname);
 
-    async _processFile(entry, file) {
-        return SUCCESS_FILE_PROCESSED;
-    }
-
-    async processFile(bucketname) {
-        const {
-            deleteEntry, setRejected,
-            setReady, getEntry
-        } = this._table.open();
-
-        let entry = await getEntry(bucketname);
-
-        if (!entry) {
-            return {
-                status: ERROR_FILE_NOT_FOUND,
-                bucketname
-            };
-        }
-
-        if (entry.status === 'ready' || entry.status === 'rejected') {
-            return {
-                status: ERROR_FILE_ALREADY_PROCESSED,
-                entry
-            };
-        }
-
-        const file = await this._fs.getObject(bucketname);
-
-        if (file === null) {
-            await deleteEntry(bucketname);
-            return {
-                status: ERROR_FILE_NOT_FOUND,
-                entry
-            };
-        }
-
-        let status = await this._validateFile(entry, file);
-
-        switch (status) {
-            case ERROR_FILE_INFECTED:
-            case ERROR_FILE_INVALID:
-                await setRejected(bucketname, file.size, file.hash);
+            if (!entry) {
+                getLogger(this).debug(`File ${bucketname} not found in entries`);
                 return {
-                    status,
+                    status: ERROR_FILE_NOT_FOUND,
+                    bucketname
+                };
+            }
+
+            if (entry.status === 'ready' || entry.status === 'rejected') {
+                getLogger(this).debug(`File ${bucketname} already processed`);
+                return {
+                    status: ERROR_FILE_ALREADY_PROCESSED,
                     entry
                 };
+            }
+
+            const file = await this.#fileStore.getObject(bucketname);
+
+            if (file === null) {
+                getLogger(this).debug(`File ${bucketname} not found in file store, deleting entry`);
+                await deleteEntry(bucketname);
+                return {
+                    status: ERROR_FILE_NOT_FOUND,
+                    entry
+                };
+            }
+
+            let status = await this._validateFile(entry, file);
+
+            switch (status) {
+                case ERROR_FILE_INFECTED:
+                case ERROR_FILE_INVALID:
+                    getLogger(this).debug(`File ${bucketname} flagged as invalid, setting it as rejected`);
+                    await setRejected(bucketname, file.size, file.hash);
+                    return {
+                        status,
+                        entry
+                    };
+            }
+
+            status = await this._processFile(entry, file);
+
+            // the size and hash may have changed after processing.
+            const info = await this.#fileStore.getObjectInfo(bucketname);
+
+            if (status === SUCCESS_FILE_PROCESSED) {
+                getLogger(this).debug(`File ${bucketname} processed successfully`);
+                await setReady(bucketname, info.size, info.hash);
+                entry = await getEntry(bucketname);
+            } else {
+                getLogger(this).debug(`File ${bucketname} processed with errors`);
+            }
+
+            return {
+                status,
+                entry
+            };
         }
 
-        status = await this._processFile(entry, file);
-
-        // the size and hash may have changed after processing.
-        const info = await this._fs.getObjectInfo(bucketname);
-
-        if (status === SUCCESS_FILE_PROCESSED) {
-            await setReady(bucketname, info.size, info.hash);
-            entry = await getEntry(bucketname);
-        }
-
-        return {
-            status,
-            entry
-        };
     }
-
 }
 
+export const FileManager = FileManagerPolicy();

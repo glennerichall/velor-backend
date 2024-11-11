@@ -26,7 +26,7 @@ export class PubSubMessageBuilder {
     #adapt(message, data) {
         message.info.controlName = controlNames[message.info.messageMeta];
         message.info.data = data;
-        return signMessage(message);
+        return new PubSubMessageWrapper(signMessage(message));
     }
 
     #getOptions(options = {}) {

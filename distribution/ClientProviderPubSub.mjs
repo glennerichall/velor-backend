@@ -1,11 +1,22 @@
-import {composePublishToPubSubClient} from "./subscriber/composePublishToPubSubClient.mjs";
-import {getServices} from "velor-utils/utils/injection/ServicesContext.mjs";
+import {composePublishToPubSubClient} from "./composers/composePublishToPubSubClient.mjs";
+import {
+    getMessageBuilder,
+    getPubSub,
+    getRpcSignaling,
+    getStreamHandler
+} from "../application/services/backendServices.mjs";
 
 export class ClientProviderPubSub {
-    constructor() {}
+    constructor() {
+    }
 
     async getClients(...channels) {
-        return composePublishToPubSubClient(getServices(this), ...channels);
+        const pubSub = getPubSub(this);
+        const rpc = getRpcSignaling(this);
+        const messageBuilder = getMessageBuilder(this);
+        const streamHandler = getStreamHandler(this);
+
+        return composePublishToPubSubClient(services, ...channels);
     }
 
     async getClient(channel) {

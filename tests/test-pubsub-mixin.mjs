@@ -7,7 +7,7 @@ const {
     test
 } = setupTestContext();
 
-test.describe('pubsub', () => {
+test.describe('PubSubMixin', () => {
 
     test('should listen to subscriptions', async () => {
         return new Promise(async (resolve, reject) => {
