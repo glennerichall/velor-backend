@@ -1,6 +1,5 @@
 import {publishPubSubMessage} from "../actions/publishPubSubMessage.mjs";
 import {validateMessage} from "velor-messaging/messaging/message/isMessage.mjs";
-import {MESSAGE_TYPE_RPC_CALL} from "velor-messaging/messaging/constants.mjs";
 
 import {getChannelForRpc} from "../channels.mjs";
 import {
@@ -8,6 +7,7 @@ import {
     getPubSub,
     getRpcSignaling
 } from "../../application/services/backendServices.mjs";
+import {getLogger} from "velor-services/injection/services.mjs";
 
 export async function submitRpcThroughPubSub(services, message, ...channels) {
 
@@ -19,16 +19,20 @@ export async function submitRpcThroughPubSub(services, message, ...channels) {
 
     validateMessage(message);
 
-    if (message.type === MESSAGE_TYPE_RPC_CALL) {
-        await pubSub.subscribeOnce(getChannelForRpc(message.info.id), data => {
-            let message = messageBuilder.unpack(data);
-            rpc.accept(message);
-        });
-        promise = rpc.getRpcSync(message.info);
-    } else {
-        promise = Promise.resolve();
-    }
+    let replyChannel = getChannelForRpc(message.info.id);
+    let subscription = await pubSub.subscribe(replyChannel, data => {
+        let message = messageBuilder.unpack(data);
+        rpc.accept(message);
+    });
 
-    await publishPubSubMessage(services, message, ...channels);
-    return promise;
+    try {
+        promise = rpc.getRpcSync(message.info);
+        await publishPubSubMessage(services, message, ...channels);
+        return await promise;
+    } finally {
+        pubSub.unsubscribe(subscription)
+            .catch(e => {
+                getLogger(services).error("Unable to unsubscribe from rpc reply channel with error " + e.message);
+            });
+    }
 }

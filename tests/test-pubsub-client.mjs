@@ -121,6 +121,18 @@ test.describe("composePublishToPubSubClient", () => {
         };
         await subscribe(services, transport, "chan1");
 
+        await client.remoteProcedure(1, 4, 'foo');
+
+        expect(transport.remoteProcedure.calledOnce).to.be.true;
+        expect(transport.remoteProcedure.calledWith(1,4, 'foo')).to.be.true;
+    })
+
+    test("should call method on remote subscriber and received result", async () => {
+        let transport = {
+            remoteProcedure: sinon.stub().returns("baz")
+        };
+        await subscribe(services, transport, "chan1");
+
         let response = await client.remoteProcedure(1, 4, 'foo');
 
         expect(response.isReply).to.be.true;

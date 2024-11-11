@@ -25,6 +25,7 @@ import {
 import {getChannelForRpc} from "../distribution/channels.mjs";
 import sinon from "sinon";
 import {waitOnAsync} from 'velor-utils/test/waitOnAsync.mjs';
+import {getSubscriptionCount} from "../distribution/actions/getSubscriptionCount.mjs";
 
 const {
     test,
@@ -43,7 +44,7 @@ test.describe("submitRpcThroughPubSub", () => {
                 [s_messageBuilder]: MessageBuilder,
                 [s_logger]: () => noOpLogger,
                 [s_rpcSignaling]: createRpcSignalingManager,
-                [s_sync]: () => new Synchronizer(500)
+                [s_sync]: () => new Synchronizer(700)
 
             }
         });
@@ -89,6 +90,7 @@ test.describe("submitRpcThroughPubSub", () => {
 
     test('should timeout rpc submission', async () => {
         let message = getMessageBuilder(services).newCommand(12);
+        let replyChannel = getChannelForRpc(message.info.id);
         let error;
         try {
             await submitRpcThroughPubSub(services, message, "chan1");
@@ -96,6 +98,61 @@ test.describe("submitRpcThroughPubSub", () => {
             error = e;
         }
         expect(error).to.be.an.instanceof(TimeoutError);
+    })
+
+    test('should unsubscribe from rpc reply channel if failed', async () => {
+        let message = getMessageBuilder(services).newCommand(12);
+        let replyChannel = getChannelForRpc(message.info.id);
+        try {
+            await submitRpcThroughPubSub(services, message, "chan1");
+        } catch (e) {
+            console.error('erreur de toto');
+        }
+        expect(await getSubscriptionCount(getPubSub(services), replyChannel)).to.eq(0);
+    })
+
+    test('should unsubscribe from rpc reply channel if success', async () => {
+
+        let transport = {
+            send(message) {
+                let channelResponse = getChannelForRpc(message.info.id);
+                let response = getMessageBuilder(services).newReply(message, 'baz');
+                getPubSub(services).publish(channelResponse, response.buffer);
+            }
+        };
+
+        await subscribe(services, transport, "chan1");
+
+        let message = getMessageBuilder(services).newCommand(12);
+        let replyChannel = getChannelForRpc(message.info.id);
+
+        await submitRpcThroughPubSub(services, message, "chan1");
+        expect(await getSubscriptionCount(getPubSub(services), replyChannel)).to.eq(0);
+    })
+
+    test('should subscribe to rpc reply channel', async () => {
+
+        let receivedRpc = new Promise(async resolve => {
+            let transport = {
+                send(message) {
+                    resolve();
+                    let channelResponse = getChannelForRpc(message.info.id);
+                    let response = getMessageBuilder(services).newReply(message, 'baz');
+                    getPubSub(services).publish(channelResponse, response.buffer);
+                }
+            };
+
+            await subscribe(services, transport, "chan1");
+        })
+
+
+        let message = getMessageBuilder(services).newCommand(12);
+        let replyChannel = getChannelForRpc(message.info.id);
+
+        submitRpcThroughPubSub(services, message, "chan1");
+
+        await receivedRpc;
+        expect(await getSubscriptionCount(getPubSub(services), replyChannel)).to.eq(1);
     })
 
     test('should validate message', async () => {
@@ -108,4 +165,5 @@ test.describe("submitRpcThroughPubSub", () => {
         expect(error).to.be.an.instanceof(Error);
         expect(error.message).to.eq("message must have a buffer property of type ArrayBuffer");
     })
+
 });

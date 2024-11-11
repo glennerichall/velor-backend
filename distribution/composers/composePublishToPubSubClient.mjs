@@ -1,9 +1,10 @@
 import {publishPubSubMessage} from "../actions/publishPubSubMessage.mjs";
-import {composeSendRpcThroughPubSubAction} from "./composeSendRpcThroughPubSubAction.mjs";
+import {composeCallMethodOfSubscriber} from "./composeCallMethodOfSubscriber.mjs";
 import {requestSubscription} from "../rpc/requestSubscription.mjs";
 import {requestUnsubscription} from "../rpc/requestUnsubscription.mjs";
 import {readStream} from "../rpc/readStream.mjs";
 import {submitRpcThroughPubSub} from "../rpc/submitRpcThroughPubSub.mjs";
+import {MESSAGE_TYPE_RPC_CALL} from "velor-messaging/messaging/constants.mjs";
 
 function isCallable(prop) {
     return prop !== "then";
@@ -48,7 +49,7 @@ export function composePublishToPubSubClient(services, ...channels) {
 
             } else if (isCallable(prop)) {
                 // invoke a remote procedure call (rpc) on the client transport
-                return composeSendRpcThroughPubSubAction(services, prop, send);
+                return composeCallMethodOfSubscriber(services, prop, channels);
             }
             return undefined;
         }
