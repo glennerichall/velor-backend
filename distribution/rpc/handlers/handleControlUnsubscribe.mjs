@@ -5,6 +5,7 @@ export async function handleControlUnsubscribe(services, wsClient, control) {
     const {
         channels,
     } = content;
-    return unsubscribe(services, wsClient, ...channels);
+    await unsubscribe(services, wsClient, ...channels);
+    return true;
 }
 

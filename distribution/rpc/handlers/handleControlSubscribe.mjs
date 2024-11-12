@@ -7,6 +7,7 @@ export async function handleControlSubscribe(services, subscriber, control) {
         channels,
     } = content;
 
-    return subscribe(services, subscriber, ...channels);
+    await subscribe(services, subscriber, ...channels);
+    return true;
 }
 

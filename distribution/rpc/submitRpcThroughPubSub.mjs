@@ -26,7 +26,9 @@ export async function submitRpcThroughPubSub(services, message, ...channels) {
     });
 
     try {
-        promise = rpc.getRpcSync(message.info);
+        promise = rpc.getRpcSync(message.info, {
+            failOnRejection: false // only transmission failures should raise an exception
+        });
         await publishPubSubMessage(services, message, ...channels);
         return await promise;
     } finally {

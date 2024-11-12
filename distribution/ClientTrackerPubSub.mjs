@@ -10,24 +10,29 @@ import {getPubSub} from "../application/services/backendServices.mjs";
 export function isTransport(transportOrId) {
     return typeof transportOrId?.send === 'function';
 }
+
 export class ClientTrackerPubSub extends ClientProviderPubSub {
 
-    async subscribe(transportOrId, ...channelsToSubscribe) {
-        if (isTransport(transportOrId)) {
-            return await subscribe(getServices(this), transportOrId, ...channelsToSubscribe);
-        } else {
+    async subscribe(channelOrTransport, ...channelsToSubscribe) {
+        if (isTransport(channelOrTransport)) {
+            return await subscribe(getServices(this), channelOrTransport, ...channelsToSubscribe);
+        } else if (typeof channelOrTransport === "string") {
             return await requestSubscription(getServices(this),
-                [getChannelForWsId(transportOrId)], channelsToSubscribe);
+                [channelOrTransport], channelsToSubscribe);
+        } else {
+            throw new Error('channelOrTransport must be on object with a send method or a channel string')
         }
     }
 
-    async unsubscribe(transportOrId, ...channelsToSubscribe) {
-        if (isTransport(transportOrId)) {
-            return await unsubscribe(getPubSub(this), transportOrId,
+    async unsubscribe(channelOrTransport, ...channelsToSubscribe) {
+        if (isTransport(channelOrTransport)) {
+            return await unsubscribe(getPubSub(this), channelOrTransport,
                 ...channelsToSubscribe);
-        } else {
+        } else if (typeof channelOrTransport === "string") {
             return await requestUnsubscription(getServices(this),
-                [getChannelForWsId(transportOrId)], channelsToSubscribe);
+                [channelOrTransport], channelsToSubscribe);
+        } else {
+            throw new Error('channelOrTransport must be on object with a send method or a channel string')
         }
     }
 

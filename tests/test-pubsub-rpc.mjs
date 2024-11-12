@@ -87,6 +87,24 @@ test.describe("submitRpcThroughPubSub", () => {
         expect(response.string()).to.eq('baz');
     })
 
+    test('should receive rpc rejection', async () => {
+        let transport = {
+            send(message) {
+                let channelResponse = getChannelForRpc(message.info.id);
+                let response = getMessageBuilder(services).newRejection(message,'baz');
+                getPubSub(services).publish(channelResponse, response.buffer);
+            }
+        };
+
+        await subscribe(services, transport, "chan1");
+
+        let message = getMessageBuilder(services).newCommand(12);
+        let response = await submitRpcThroughPubSub(services, message, "chan1");
+
+        expect(response.isRejection).to.be.true;
+        expect(response.error).to.be.an.instanceOf(Error);
+        expect(response.error.message).to.eq('baz');
+    })
 
     test('should timeout rpc submission', async () => {
         let message = getMessageBuilder(services).newCommand(12);
@@ -106,7 +124,6 @@ test.describe("submitRpcThroughPubSub", () => {
         try {
             await submitRpcThroughPubSub(services, message, "chan1");
         } catch (e) {
-            console.error('erreur de toto');
         }
         expect(await getSubscriptionCount(getPubSub(services), replyChannel)).to.eq(0);
     })
@@ -131,7 +148,6 @@ test.describe("submitRpcThroughPubSub", () => {
     })
 
     test('should subscribe to rpc reply channel', async () => {
-
         let receivedRpc = new Promise(async resolve => {
             let transport = {
                 send(message) {

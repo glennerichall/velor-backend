@@ -1,7 +1,7 @@
 import {composePublishToPubSubClient} from "../distribution/composers/composePublishToPubSubClient.mjs";
 
 import {setupTestContext} from "velor-utils/test/setupTestContext.mjs";
-import {createAppServicesInstance} from "velor-services/injection/ServicesContext.mjs";
+import {createAppServicesInstance, getServiceBinder} from "velor-services/injection/ServicesContext.mjs";
 import {
     s_logger,
     s_messageBuilder,
@@ -25,6 +25,7 @@ import {Synchronizer} from "velor-utils/utils/sync.mjs";
 import {getChannelForRpc} from "../distribution/channels.mjs";
 import {isClientSubscribed} from "../distribution/subscriber/isClientSubscribed.mjs";
 import {initializeHmacSigning} from "velor-utils/utils/signature.mjs";
+import {ClientProviderPubSub} from "../distribution/ClientProviderPubSub.mjs";
 
 const {
     test,
@@ -45,11 +46,12 @@ test.describe("composePublishToPubSubClient", () => {
                 [s_logger]: () => noOpLogger,
                 [s_rpcSignaling]: createRpcSignalingManager,
                 [s_sync]: Synchronizer
-
             }
         });
 
-        client = composePublishToPubSubClient(services, "chan1");
+        let provider = getServiceBinder(services).createInstance(ClientProviderPubSub);
+        client = await provider.getClient("chan1");
+
     });
 
     test("should send message", async () => {
@@ -124,7 +126,7 @@ test.describe("composePublishToPubSubClient", () => {
         await client.remoteProcedure(1, 4, 'foo');
 
         expect(transport.remoteProcedure.calledOnce).to.be.true;
-        expect(transport.remoteProcedure.calledWith(1,4, 'foo')).to.be.true;
+        expect(transport.remoteProcedure.calledWith(1, 4, 'foo')).to.be.true;
     })
 
     test("should call method on remote subscriber and received result", async () => {
