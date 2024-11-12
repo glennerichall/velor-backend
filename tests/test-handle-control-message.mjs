@@ -19,7 +19,7 @@ import {
     PUBSUB_CONTROL_UNSUBSCRIBE
 } from "../distribution/rpc/control.mjs";
 import sinon from "sinon";
-import {handleControlMessage, handleControlMessagePolicy} from "../distribution/rpc/handlers/handleControlMessage.mjs";
+import {handleControlMessagePolicy} from "../distribution/rpc/handlers/handleControlMessage.mjs";
 import {getMessageBuilder, getPubSub} from "../application/services/backendServices.mjs";
 import {PubSubMessageFactory} from "../distribution/messaging/PubSubMessageFactory.mjs";
 import {initializeHmacSigning} from "velor-utils/utils/signature.mjs";

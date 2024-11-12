@@ -3,9 +3,10 @@ import {getLogger} from "velor-services/injection/services.mjs";
 import {getMessageBuilder} from "../../application/services/backendServices.mjs";
 import {handleControlMessage as handleControlMessageFunction} from "../rpc/handlers/handleControlMessage.mjs";
 
-export const composeReceiveFromPubSubListenerPolicy = (handleControlMessage = handleControlMessageFunction) =>
-    function composeReceiveFromPubSubListener(services, subscriber) {
+export const composeReceiveFromPubSubListenerPolicy = (handleControlMessage) =>
+    (services, subscriber) => {
 
+        handleControlMessage = handleControlMessage ?? handleControlMessageFunction;
         const messageBuilder = getMessageBuilder(services);
 
         // The handler accepts either an ArrayBuffer, string or a JSON string to be sent through the client WS.

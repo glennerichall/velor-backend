@@ -16,7 +16,7 @@ const defaultHandlers = {
 };
 
 export const handleControlMessagePolicy = (handlers = defaultHandlers) =>
-    async function handleControlMessage(services, subscriber, control) {
+    async (services, subscriber, control) => {
 
         const handler = handlers[control.command];
 
