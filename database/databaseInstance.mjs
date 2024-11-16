@@ -1,7 +1,6 @@
 import * as files from "../persistence/files.mjs";
 import * as tokens from "../persistence/tokens.mjs";
 import * as system from "../persistence/system.mjs";
-import {DatabaseManager} from "velor-utils/database/DatabaseManager.mjs";
 import {ENV_TEST} from "velor-utils/env.mjs";
 import {getEnvValue, getNodeEnv} from "velor-services/injection/baseServices.mjs";
 import {
@@ -9,6 +8,7 @@ import {
     DATABASE_SCHEMA,
     DATABASE_URL_VAR
 } from "../application/services/backendEnvKeys.mjs";
+import {DatabaseManager} from "velor-database/database/DatabaseManager.mjs";
 
 export function getRawStatements() {
     return {

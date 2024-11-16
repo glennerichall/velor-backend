@@ -1,6 +1,6 @@
 {
   "name": "velor-backend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "test": "npx playwright test"
   },
@@ -15,7 +15,8 @@
     "chai-exclude": "^3.0.0",
     "dotenv": "^16.4.5",
     "playwright": "^1.48.1",
-    "sinon": "^19.0.2"
+    "sinon": "^19.0.2",
+    "sinon-chai": "^4.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.682.0",
@@ -26,6 +27,7 @@
     "velor-api": "github:glennerichall/velor-api",
     "velor-messaging": "github:glennerichall/velor-messaging",
     "velor-services": "github:glennerichall/velor-services",
+    "velor-database": "github:glennerichall/velor-database",
     "velor-utils": "github:glennerichall/velor-utils",
     "winston": "^3.15.0"
   }
